@@ -435,3 +435,30 @@ to handle them with care.
 
 In short, use `namespace-base-phase` for an identifier that you are _given_, 
 and use `variable-reference->module-base-phase` for an identifier that are apparent _in the module_.
+
+## How to use syntax/parse with general phase levels?
+
+Like this:
+
+```racket
+#lang racket/base
+
+(module my-mod racket
+  (define a 1)
+  (provide a))
+
+(require syntax/parse
+         (for-meta 2 (rename-in 'my-mod [a a-known]))
+         (for-meta 1 (rename-in 'my-mod [a stx])))
+
+(define-literal-set lits
+  #:phase 2
+  (a-known))
+
+(define stx-phase 1)
+
+(syntax-parse #'stx
+  #:literal-sets ([lits #:phase stx-phase])
+  [a-known #t]
+  [_ #f])
+```

@@ -443,22 +443,33 @@ Like this:
 ```racket
 #lang racket/base
 
-(module my-mod racket
+(module my-mod racket/base
   (define a 1)
   (provide a))
 
-(require syntax/parse
-         (for-meta 2 (rename-in 'my-mod [a a-known]))
-         (for-meta 1 (rename-in 'my-mod [a stx])))
+(module test racket/base
+  (require syntax/parse
+           (for-meta 2 (rename-in (submod ".." my-mod) [a a-known]))
+           (for-meta 10 (rename-in (submod ".." my-mod) [a stx])))
 
-(define-literal-set lits
-  #:phase 2
-  (a-known))
+  ;; +2 relative to module-base-phase
+  (define-literal-set lits
+    #:phase 2
+    (a-known))
 
-(define stx-phase 1)
+  (define base-phase (variable-reference->module-base-phase (#%variable-reference)))
 
-(syntax-parse #'stx
-  #:literal-sets ([lits #:phase stx-phase])
-  [a-known #t]
-  [_ #f])
+  (define stx-phase (+ 10 base-phase))
+
+  (println (list 'base-phase base-phase))
+  (println (list 'eq-using-free-id
+                 (free-identifier=? #'stx #'a-known stx-phase (+ 2 base-phase))))
+  (println
+   (list 'eq-using-syntax-parse
+         (syntax-parse #'stx
+           #:literal-sets ([lits #:phase stx-phase])
+           [a-known #t]
+           [_ #f]))))
+
+(require (for-syntax 'test))
 ```

@@ -357,7 +357,7 @@ outputs:
 '(module-base-phase main 0)
 ```
 
-However, `namespace-base-phase` has `current-namespace` as a parameter, so it's not relative to the module. Therefore, they could be different:
+However, `namespace-base-phase` has `current-namespace` as a parameter. It's not relative to the module, so they could be different:
 
 ``` racket
 ;; main.rkt
@@ -383,7 +383,8 @@ However, `namespace-base-phase` has `current-namespace` as a parameter, so it's 
 ```
 
 ``` racket
-;; b.rkt#lang racket
+;; b.rkt
+#lang racket
 
 (list 'namespace-base-phase 'b (namespace-base-phase))
 (list 'module-base-phase 'b (variable-reference->module-base-phase (#%variable-reference)))

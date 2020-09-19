@@ -1,6 +1,6 @@
 See also https://docs.racket-lang.org/guide/phases.html
 
-## require for-syntax vs provide for-syntax 
+## require for-syntax vs provide for-syntax (a.k.a. why does for-template matter?)
 
 ```racket 
 ;; foo
